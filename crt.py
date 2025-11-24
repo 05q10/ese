@@ -1,43 +1,47 @@
 import numpy as np
 def euclidean(a,b):
-    if a<b:
-        r1=b
-        r2=a
+    if b==0:
+        return a
     else:
-        r1=a
-        r2=b
-    while r2!=0:
-        q=r1//r2
-        r=r1%r2
-        r1=r2
-        r2=r
-    return r1
+        return euclidean(b,a%b)
 
-def mi(a,b):
-    if a<=b:
-        r1=b
-        r2=a
-    else:
-        r1=b
-        r2=a%b
-    if euclidean(r1,r2)==1:
-        t1=0
-        t2=1
-        while r2!=0:
-            q=r1//r2
-            r=r1%r2
-            t=t1-t2*q
-            r1=r2
-            r2=r
-            t1=t2
-            t2=t
-    else:
-        print("Numbers are not coprime")
-        exit()
-    mi=t1
-    if mi<=0:
-        mi+=b
-    return mi
+def mod_inverse(a, m):
+    print("a =", a, " m =", m)
+    print("--------------------------------------------")
+    print("q\t A\t B\t r\t t1\t t2\t t")
+    print("--------------------------------------------")
+
+    A = a
+    B = m
+
+    # Initial coefficients
+    t1 = 0
+    t2 = 1
+
+    while B != 0:
+        q = A // B
+        r = A % B
+        t = t1 - q * t2
+
+        print(f"{q}\t {A}\t {B}\t {r}\t {t1}\t {t2}\t {t}")
+
+        # Shift values
+        A = B
+        B = r
+        t1 = t2
+        t2 = t
+
+    # A = gcd, t1 = coefficient of original 'a'
+    if A != 1:
+        print("No inverse exists (gcd =", A, ")")
+        return None
+
+    inverse = t1 % m
+    print("--------------------------------------------")
+    print("Inverse =", inverse)
+    print("--------------------------------------------")
+    return inverse
+
 
 def crt(c,m,k):
     M=1 #REMEMBER
@@ -49,7 +53,7 @@ def crt(c,m,k):
 
     M_inv=[]
     for i in range(0,k):
-        M_inv.append(mi(M_val[i],m[i]))
+        M_inv.append(mod_inverse(M_val[i],m[i]))
 
     c_val=0
     print("Residual results:")
@@ -87,7 +91,7 @@ def main():
             c.append((a[i]*b[i])%m[i])
     elif choice==4:
         for i in range(0,k):
-            c.append((a[i]*mi(b[i],m[i]))%m[i])
+            c.append((a[i]*mod_inverse(b[i],m[i]))%m[i])
     else:
         print("Invalid choice")
         exit()
